@@ -15,7 +15,11 @@ namespace Collections
             mylist.Add(4);
             mylist.Insert(1, 0);
 
-            foreach (int item in mylist) Console.Write(item);
+            for (int i = 0; i < mylist.Count; i++)
+            {
+                int item = mylist[i];
+                Console.Write(item);
+            }
         }
     }
 }
