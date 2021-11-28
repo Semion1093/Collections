@@ -122,8 +122,28 @@ namespace Collections
                 throw new IndexOutOfRangeException("Индекс выходит за границы массива");
 
             else if (_size < _capacity)
-            { 
+            {
                 T[] tmpArray = new T[_size + 1];
+
+                for (int i = 0; i < index; i++)
+                {
+                    tmpArray[i] = _array[i];
+                }
+
+                tmpArray[index] = item;
+
+                for (int i = index; i < _size; i++)
+                {
+                    tmpArray[i + 1] = _array[i];
+                }
+
+                _array = tmpArray;
+                _size++;
+                _capacity = tmpArray.Length;
+            }
+            else
+            {
+                T[] tmpArray = new T[(int)(_capacity * 1.1 + 1)]; ;
 
                 tmpArray[index] = item;
 
@@ -141,73 +161,7 @@ namespace Collections
                 _size++;
                 _capacity = tmpArray.Length;
             }
-            else
-            {
-                T[] tmpArray = new T[_capacity + 1];
-
-                tmpArray[_size] = item;
-
-                for (int i = 0; i < index; i++)
-                {
-                    tmpArray[i] = _array[i];
-                }
-
-                for (int i = index; i < _size; i++)
-                {
-                    tmpArray[i + 1] = _array[i];
-                }
-
-                _array = tmpArray;
-                _size++;
-                _capacity = tmpArray.Length;
-            }
         }
-        //public void Insert(int index, T item)
-        //{
-        //    if (index <= 0 && index >= Count)
-        //        throw new IndexOutOfRangeException("Индекс выходит за границы массива");
-
-        //    else if (_size < _capacity)
-        //    {
-        //        T[] tmpArray = new T[_size + 1];
-
-        //        tmpArray[index] = item;
-
-        //        for (int i = 0; i < index; i++)
-        //        {
-        //            tmpArray[i] = _array[i];
-        //        }
-
-        //        for (int i = index; i < _size; i++)
-        //        {
-        //            tmpArray[i + 1] = _array[i];
-        //        }
-
-        //        _array = tmpArray;
-        //        _size++;
-        //        _capacity = tmpArray.Length;
-        //    }
-        //    else
-        //    {
-        //        T[] tmpArray = new T[_capacity + 1];
-
-        //        tmpArray[_size] = item;
-
-        //        for (int i = 0; i < index; i++)
-        //        {
-        //            tmpArray[i] = _array[i];
-        //        }
-
-        //        for (int i = index; i < _size; i++)
-        //        {
-        //            tmpArray[i + 1] = _array[i];
-        //        }
-
-        //        _array = tmpArray;
-        //        _size++;
-        //        _capacity = tmpArray.Length;
-        //    }
-        //}
 
         public bool Remove(T item)
         {
@@ -231,12 +185,137 @@ namespace Collections
             if (index <= 0 && index >= Count)
                 throw new IndexOutOfRangeException("Индекс выходит за границы массива");
 
-            if (Count < Capasity)
-                for (int i = index; i < Count - 1; i++)
+            else
+            {
+                T[] tmpArray = new T[_size - 1];
+
+                for (int i = 0; i < index; i++)
+                    tmpArray[i] = _array[i];
+                for (int i = index + 1; i < _size; i++)
+                    tmpArray[i - 1] = _array[i];
+
+                _array = tmpArray;
+                _size--;
+                _capacity = tmpArray.Length;
+            }
+        }
+
+        public T[] ToArray()
+        {
+           T[] array = new T[_array.Length];
+            _array.CopyTo(array, 0);
+            return array;
+        }
+
+        public int BinarySearch(int index, int count, T item, IComparer<T> comparer)
+        {
+            if (comparer == null)
+
+                throw new InvalidOperationException("Не сравниваемый тип");
+
+            int left = index;
+
+            int right = index + count;
+
+            while (left <= right)
+
+            {
+                var middle = (left + right) / 2;
+
+                if (comparer.Compare(item, _array[middle]) == 0)
+
+                    return middle;
+
+                if (comparer.Compare(item, _array[middle]) < 0)
+
+                    right = middle - 1;
+
+                else
+
+                    left = middle + 1;
+
+            }
+            return -1;
+        }
+
+        public void AddToFront(T item)
+        {
+            if (_size < _capacity)
+            {
+                T[] tmpArray = new T[_size + 1];
+
+                tmpArray[0] = item;
+
+                for (int i = 0; i < _size; i++)
                 {
-                    _array[i] = _array[i + 1];
+                    tmpArray[i + 1] = _array[i];
                 }
+
+                _array = tmpArray;
+                _size++;
+                _capacity = tmpArray.Length;
+            }
+            else
+            {
+                T[] tmpArray = new T[(int)(_capacity * 1.1 + 1)];
+
+                tmpArray[0] = item;
+
+                for (int i = 0; i < _size; i++)
+                {
+                    tmpArray[i + 1] = _array[i];
+                }
+
+                _array = tmpArray;
+                _size++;
+                _capacity = tmpArray.Length;
+            }
+        }
+
+        public void RemoveFromFront()
+        {
+            T[] tmpArray = new T[_size - 1];
+
+            for (int i = 1; i < _size; i++)
+                tmpArray[i - 1] = _array[i];
+
+            _array = tmpArray;
             _size--;
+            _capacity = tmpArray.Length;
+        }
+
+        public void RemoveFromEnd()
+        {
+            T[] tmpArray = new T[_size - 1];
+
+            for (int i = 0; i < _size - 1; i++)
+                tmpArray[i] = _array[i];
+
+            _array = tmpArray;
+            _size--;
+            _capacity = tmpArray.Length;
+        }
+
+        public void Reverse()
+        {
+            for (int i = 0; i < _size / 2; i++)
+            {
+                T tmp = _array[i];
+                _array[i] = _array[_array.Length - i - 1];
+                _array[_array.Length - i - 1] = tmp;
+            }
+        }
+
+        public int FirstIndexByValue(T item)
+        {
+            for (int i = 0; i < _size; i++)
+            {
+                if (_array[i].Equals(item))
+                    return i;
+                break;
+            }
+            return -1;
         }
     }
 }
+
