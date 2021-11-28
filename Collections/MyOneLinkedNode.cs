@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Collections
 {
-    class LinkedListNode<T> 
+    class LinkedListNode<T>
     {
         public LinkedListNode(T data)
         {
@@ -15,7 +14,7 @@ namespace Collections
         public LinkedListNode<T> Next { get; set; }
     }
 
-    public class LinkedList<T> : IEnumerable<T> 
+    public class MyLinkedList<T> : IEnumerable<T>
     {
         LinkedListNode<T> head;
         LinkedListNode<T> tail;
@@ -33,16 +32,9 @@ namespace Collections
 
         public void RemoveFirst(T data)
         {
-            if (head != null)
-            {
-                head = head.Next;
-                if (head == null)
-                {
-                    tail = null;
-                }
-                count--;
-
-            }
+            head = head.Next;
+            tail = null;
+            count--;
         }
 
         public int Count { get { return count; } }
@@ -51,12 +43,12 @@ namespace Collections
         {
             get
             {
-                if (index < 0) throw new ArgumentOutOfRangeException();
+                if (index < 0) throw new ArgumentOutOfRangeException("Неверный индекс!");
                 LinkedListNode<T> current = head;
                 for (int i = 0; i < index; i++)
                 {
                     if (current.Next == null)
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException("Неверный индекс!");
                     current = current.Next;
                 }
                 return current.Data;
@@ -95,7 +87,6 @@ namespace Collections
                     }
                     else
                     {
-
                         head = head.Next;
 
                         if (head == null)
@@ -110,7 +101,7 @@ namespace Collections
             }
             return false;
         }
- 
+
         public bool IsEmpty { get { return count == 0; } }
 
         public void Clear()
